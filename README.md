@@ -11,3 +11,6 @@ and plot the result with the provided gnuplot script by entering
    $ gnuplot plot.plt
    ```
 after execution.
+
+Example gallery:
+![](/demo/examples.png?raw=true)
