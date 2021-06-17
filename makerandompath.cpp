@@ -42,6 +42,7 @@ class Path {
 	 int nmodes; // how many modes are taken into account? from [pi to nmodes*pi]
 	 double amplitude; // amplitude of coefficients in path generation
 	 double amplitude_limit; // limitation for values of rescaled amplitudes
+	 int amplitude_limit_retries; // number of retries for finding suitable coefficients
 	 int pathdensity; // number of samples per arc length 1
 	 bool allocated; // test if array of points was allocated
     Point* points; // array of points
@@ -49,6 +50,7 @@ class Path {
 		nmodes = 5;
 		amplitude = 1.0f;
 		amplitude_limit = 1.0f;
+		amplitude_limit_retries = 10;
 		pathdensity = 100;
 		allocated = false;
     }
@@ -59,7 +61,9 @@ class Path {
 		// find cosine coefficients for x-coordinate
   		double x_coeffs_cos[nmodes], x_coeffs_sin[nmodes];
 		bool amplitude_limit_satisfied = false;
-		while (!amplitude_limit_satisfied) {
+		int current_retries = 0;
+		while (!amplitude_limit_satisfied && current_retries <= amplitude_limit_retries) {
+			current_retries++;
 			// total sum = 0
 			double thissum = 0.0f;
 			for (int i = 2; i <= nmodes; i++) {
@@ -97,7 +101,9 @@ class Path {
   		// find cosine coefficients for y-coordinate
 		double y_coeffs_cos[nmodes], y_coeffs_sin[nmodes];
 		amplitude_limit_satisfied = false;
-		while (!amplitude_limit_satisfied) {
+		current_retries = 0;
+		while (!amplitude_limit_satisfied && current_retries <= amplitude_limit_retries) {
+			current_retries++;
   			// total sum = 0
 			double thissum = 0.0f;
 	  		for (int i = 2; i <= nmodes; i++) {
@@ -178,7 +184,7 @@ class Path {
 	  }
 };
 
-void writepathtofile( Path somepath );
+void writepathtofile( Path& somepath );
 
 int main(int argc, char *argv[]){
 	unsigned int someseed = (unsigned int) (time(NULL));
@@ -191,7 +197,7 @@ int main(int argc, char *argv[]){
 	return 0;
 }
 
-void writepathtofile( Path somepath ){
+void writepathtofile( Path& somepath ){
 	std::ofstream outputfile;
 	int icount;
 
